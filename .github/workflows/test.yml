@@ -1,0 +1,60 @@
+name: Tests
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  backend-tests:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Setup Bun
+      uses: oven-sh/setup-bun@v1
+      with:
+        bun-version: latest
+
+    - name: Install dependencies
+      working-directory: ./backend
+      run: bun install
+
+    - name: Run tests
+      working-directory: ./backend
+      run: bun test
+
+  frontend-build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        cache: 'npm'
+        cache-dependency-path: frontend/package-lock.json
+
+    - name: Install dependencies
+      working-directory: ./frontend
+      run: npm ci
+
+    - name: Build frontend
+      working-directory: ./frontend
+      run: npm run build
+
+  docker-build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Build backend image
+      run: docker build -f docker/Dockerfile.backend -t cdn-xdata-backend .
+
+    - name: Build frontend image
+      run: docker build -f docker/Dockerfile.frontend -t cdn-xdata-frontend .
