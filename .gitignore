@@ -43,3 +43,6 @@ yarn-error.log*
 
 # Docker
 *.tar
+
+# Internal documentation
+docs/prd.md
