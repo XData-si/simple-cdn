@@ -1,6 +1,12 @@
 # CDN XData
 
-**Professional image CDN service by Cognition Labs EU**
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![Tests](https://github.com/XData-si/simple-cdn/workflows/Tests/badge.svg)](https://github.com/XData-si/simple-cdn/actions)
+[![Bun](https://img.shields.io/badge/Bun-1.0-black?logo=bun)](https://bun.sh)
+[![Docker](https://img.shields.io/badge/Docker-ready-2496ED?logo=docker)](https://www.docker.com)
+[![Caddy](https://img.shields.io/badge/Caddy-2-1F88C0?logo=caddy)](https://caddyserver.com)
+
+**Professional image CDN service by [Cognition Labs EU](https://cognitiolabs.eu)**
 
 Production-ready image CDN service running at **https://cdn.xdata.si** that serves JPG, PNG, and SVG files publicly while restricting upload/edit operations to authenticated users.
 
@@ -378,4 +384,15 @@ For issues and questions:
 - Check [Troubleshooting](#troubleshooting) section
 - Review [API.md](docs/API.md) for API details
 - See [DEPLOYMENT.md](DEPLOYMENT.md) for production setup
+- Open an [issue](https://github.com/XData-si/simple-cdn/issues) on GitHub
 - Contact: admin@cognitiolabs.eu
+
+## Repository
+
+- **GitHub**: https://github.com/XData-si/simple-cdn
+- **Production**: https://cdn.xdata.si
+- **Company**: https://cognitiolabs.eu
+
+## Changelog
+
+See [CHANGELOG.md](CHANGELOG.md) for version history and release notes.
