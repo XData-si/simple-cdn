@@ -69,19 +69,24 @@ Login with:
 
 ## What's Running?
 
-- **Backend API**: http://localhost:3000 (inside Docker)
-- **Frontend + Proxy**: http://localhost:8080 (your access point)
-- **Public CDN**: http://localhost:8080/cdn/*
-- **Health Check**: http://localhost:8080/healthz
+- **Backend API**: http://localhost:3000 (Docker container)
+- **Health Check**: http://localhost:3000/healthz
 
-## First Upload
+**Note**: For production, you need:
+- External proxy (Caddy/Nginx/Apache) on ports 80/443
+- Frontend built and deployed to web root
+- See [PROXY.md](PROXY.md) for configuration
 
-1. Login to http://localhost:8080
+## First Upload (Production)
+
+1. Login to https://cdn.xdata.si
 2. Drag and drop an image (JPG, PNG, or SVG)
 3. Click "Copy URL" button
 4. Share the public URL - **no authentication required!**
 
-Example public URL: `http://localhost:8080/cdn/photo.jpg`
+Example public URL: `https://cdn.xdata.si/cdn/photo.jpg`
+
+**For local testing**: Backend API is at http://localhost:3000 but you need a proxy to access the full application.
 
 ## View Logs
 
@@ -97,9 +102,11 @@ docker-compose down
 
 ## Troubleshooting
 
-### Can't access http://localhost:8080
-- Check Docker is running: `docker ps`
-- Check logs: `docker-compose logs proxy`
+### Can't access application
+- Check backend is running: `docker ps | grep cdn-backend`
+- Check backend logs: `docker-compose logs backend`
+- Check external proxy is running and configured
+- See [PROXY.md](PROXY.md) for proxy setup
 
 ### Login fails
 - Verify `ADMIN_PASSWORD_HASH` in `.env` matches your password

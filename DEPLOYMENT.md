@@ -11,7 +11,15 @@ Production deployment guide for **cdn.xdata.si** (Cognition Labs EU).
 
 ## Production Setup
 
-### 1. Clone Repository on Server
+### 1. Prerequisites
+
+- Server with Docker and Docker Compose installed
+- External proxy installed (Caddy, Nginx, or Apache)
+- Domain `cdn.xdata.si` pointed to your server's IP
+- Ports 80 and 443 configured in proxy
+- SSH access to server
+
+### 2. Clone Repository on Server
 
 ```bash
 ssh user@your-server
@@ -61,17 +69,30 @@ echo -n "your-secure-password" | bun run hash-password
 
 Copy the hash output to `.env` on the server.
 
-### 4. Configure Caddy for HTTPS
+### 4. Setup External Proxy
 
-The Caddyfile is already configured for `cdn.xdata.si`. Caddy will automatically:
-- Obtain Let's Encrypt SSL certificate
-- Enable HTTP/3
-- Redirect HTTP to HTTPS
-- Renew certificates automatically
+Configure your external proxy to:
+- Serve frontend static files
+- Proxy `/api/*` and `/cdn/*` to backend (port 3000)
+- Handle SSL/TLS termination
+- Set security headers
 
-**No manual SSL configuration needed!**
+**See [PROXY.md](PROXY.md) for complete configuration examples** for Caddy, Nginx, and Apache.
 
-### 5. Start Services
+### 5. Build and Deploy Frontend
+
+```bash
+# Build frontend
+cd frontend
+npm install
+npm run build
+
+# Deploy to web root (adjust path for your proxy)
+sudo mkdir -p /var/www/cdn-xdata/frontend
+sudo cp -r dist/* /var/www/cdn-xdata/frontend/dist/
+```
+
+### 6. Start Backend Service
 
 ```bash
 # Build and start in detached mode
@@ -84,10 +105,16 @@ docker-compose logs -f
 docker-compose ps
 ```
 
-### 6. Verify Deployment
+### 7. Verify Deployment
 
 ```bash
-# Health check
+# Check backend is running
+docker ps | grep cdn-backend
+
+# Health check (local)
+curl http://localhost:3000/healthz
+
+# Health check (via proxy)
 curl https://cdn.xdata.si/healthz
 
 # Should return:
@@ -131,20 +158,27 @@ sudo firewall-cmd --reload
 
 ## SSL Certificate
 
-Caddy automatically obtains SSL certificates from Let's Encrypt. On first start:
+Setup SSL certificates for your external proxy:
 
-1. Caddy detects domain `cdn.xdata.si` in Caddyfile
-2. Performs ACME HTTP-01 challenge
-3. Obtains certificate
-4. Enables HTTPS automatically
-5. Redirects HTTP → HTTPS
+### Using Certbot (Let's Encrypt)
 
-**Certificate renewal is automatic** (happens ~30 days before expiry).
-
-View certificate info:
 ```bash
-docker-compose exec proxy caddy list-certificates
+# Install certbot
+sudo apt install certbot
+
+# For Nginx
+sudo apt install python3-certbot-nginx
+sudo certbot --nginx -d cdn.xdata.si
+
+# For Apache
+sudo apt install python3-certbot-apache
+sudo certbot --apache -d cdn.xdata.si
+
+# For Caddy
+# Caddy handles SSL automatically via ACME
 ```
+
+**Certificate renewal** is automatic with certbot timer.
 
 ## Storage Management
 

@@ -28,7 +28,7 @@ Production-ready image CDN service running at **https://cdn.xdata.si** that serv
 
 - **Backend**: Bun + TypeScript (fast, low memory, < 100ms cold start)
 - **Frontend**: React + Vite (modern, fast development)
-- **Reverse Proxy**: Caddy (automatic HTTPS, HTTP/3)
+- **Reverse Proxy**: External (Caddy, Nginx, Apache - see [PROXY.md](PROXY.md))
 - **Storage**: Local filesystem (S3-compatible backend support planned)
 - **Authentication**: Argon2id password hashing, HTTP-only cookies
 
@@ -79,17 +79,18 @@ docker-compose down
 
 ### 4. Access the Application
 
-**Development (local):**
-- **Admin Panel**: http://localhost:8080/
-- **CDN (public)**: http://localhost:8080/cdn/*
-- **API**: http://localhost:8080/api/*
-- **Health Check**: http://localhost:8080/healthz
-- **Metrics**: http://localhost:8080/metrics
+**Backend API (Docker container):**
+- **Port**: http://localhost:3000
+- **Health Check**: http://localhost:3000/healthz
+- **Metrics**: http://localhost:3000/metrics
 
-**Production:**
+**Production (via external proxy):**
 - **Admin Panel**: https://cdn.xdata.si/
 - **CDN (public)**: https://cdn.xdata.si/cdn/*
+- **API**: https://cdn.xdata.si/api/*
 - **Company**: https://cognitiolabs.eu
+
+**Note**: Backend runs on port 3000. You need an external proxy (Caddy, Nginx, Apache) to serve the frontend and proxy requests. See [PROXY.md](PROXY.md) for configuration examples.
 
 ## Development
 
@@ -350,14 +351,18 @@ ports:
 
 ## Production Deployment
 
-For production deployment to **cdn.xdata.si**, see [DEPLOYMENT.md](DEPLOYMENT.md) for detailed instructions.
+For production deployment to **cdn.xdata.si**, see:
+- [DEPLOYMENT.md](DEPLOYMENT.md) - Complete deployment guide
+- [PROXY.md](PROXY.md) - External proxy configuration (Caddy, Nginx, Apache)
 
 **Quick production checklist:**
 1. ✅ Point DNS to server
-2. ✅ Configure `.env` with strong credentials
-3. ✅ Caddy automatically handles SSL (Let's Encrypt)
-4. ✅ Ports 80 and 443 open
-5. ✅ Set `BASE_URL=https://cdn.xdata.si`
+2. ✅ Configure external proxy (Caddy/Nginx/Apache)
+3. ✅ Setup SSL certificates (Let's Encrypt)
+4. ✅ Build and deploy frontend
+5. ✅ Configure `.env` with strong credentials
+6. ✅ Start backend with `docker-compose up -d`
+7. ✅ Set `BASE_URL=https://cdn.xdata.si`
 
 ## License
 
