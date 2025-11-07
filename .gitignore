@@ -46,3 +46,6 @@ yarn-error.log*
 
 # Internal documentation
 docs/prd.md
+
+# Claude Code settings
+.claude/
