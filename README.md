@@ -4,7 +4,7 @@
 [![Tests](https://github.com/XData-si/simple-cdn/workflows/Tests/badge.svg)](https://github.com/XData-si/simple-cdn/actions)
 [![Bun](https://img.shields.io/badge/Bun-1.0-black?logo=bun)](https://bun.sh)
 [![Docker](https://img.shields.io/badge/Docker-ready-2496ED?logo=docker)](https://www.docker.com)
-[![Caddy](https://img.shields.io/badge/Caddy-2-1F88C0?logo=caddy)](https://caddyserver.com)
+[![Version](https://img.shields.io/badge/Version-1.1.0-green.svg)](CHANGELOG.md)
 
 **Professional image CDN service by [Cognition Labs EU](https://cognitiolabs.eu)**
 

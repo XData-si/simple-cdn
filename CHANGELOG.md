@@ -2,6 +2,40 @@
 
 All notable changes to CDN XData will be documented in this file.
 
+## [1.1.0] - 2025-11-07
+
+### Changed - **BREAKING CHANGE**
+
+#### Removed Internal Caddy Proxy
+- ⚠️ **Breaking**: Removed Caddy proxy container from `docker-compose.yml`
+- Backend now exposes port 3000 directly
+- Requires external proxy (Caddy, Nginx, or Apache) for production
+- Frontend must be built and deployed separately to proxy's web root
+
+**Migration Required:**
+1. Setup external proxy on your server
+2. Build frontend: `cd frontend && npm run build`
+3. Deploy frontend to proxy's web root (e.g., `/var/www/cdn-xdata/frontend/dist/`)
+4. Configure proxy to serve frontend and proxy API/CDN to backend port 3000
+5. Update `.env`: `BASE_URL=https://cdn.xdata.si`
+
+#### Added
+- ✅ **PROXY.md** - Complete proxy configuration guide
+  - Caddy configuration example
+  - Nginx configuration example
+  - Apache configuration example
+  - SSL/TLS setup instructions
+  - Troubleshooting guide
+
+#### Updated Documentation
+- ✅ README.md - Updated tech stack and deployment sections
+- ✅ DEPLOYMENT.md - Added external proxy setup steps
+- ✅ QUICKSTART.md - Updated for external proxy architecture
+
+**Reason**: Production server already has proxy running. This change allows CDN XData to work alongside other services behind a shared proxy.
+
+---
+
 ## [1.0.0] - 2025-11-06
 
 ### Added - Initial Release
