@@ -1,0 +1,22 @@
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.breadcrumb-item {
+  color: var(--color-text);
+  padding: 0.25rem 0.5rem;
+  border-radius: var(--radius);
+  transition: background-color 0.2s;
+}
+
+.breadcrumb-item:hover {
+  background-color: var(--color-bg-secondary);
+}
+
+.breadcrumb-separator {
+  color: var(--color-text-secondary);
+  user-select: none;
+}

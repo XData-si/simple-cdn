@@ -1,0 +1,24 @@
+{
+  "name": "simple-cdn-backend",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Simple CDN backend service",
+  "scripts": {
+    "dev": "bun --watch src/server.ts",
+    "start": "bun src/server.ts",
+    "test": "bun test",
+    "test:watch": "bun test --watch",
+    "hash-password": "bun scripts/hash-password.ts"
+  },
+  "dependencies": {
+    "@node-rs/argon2": "^1.8.0",
+    "sharp": "^0.33.0",
+    "mime-types": "^2.1.35",
+    "sanitize-html": "^2.11.0"
+  },
+  "devDependencies": {
+    "@types/mime-types": "^2.1.4",
+    "@types/sanitize-html": "^2.11.0",
+    "bun-types": "latest"
+  }
+}

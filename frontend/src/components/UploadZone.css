@@ -1,0 +1,31 @@
+.upload-zone {
+  border: 2px dashed var(--color-border);
+  border-radius: var(--radius);
+  padding: 2rem;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-bottom: 2rem;
+  background-color: var(--color-bg);
+}
+
+.upload-zone:hover,
+.upload-zone:focus {
+  border-color: var(--color-primary);
+  background-color: var(--color-bg-secondary);
+}
+
+.upload-zone-dragging {
+  border-color: var(--color-primary);
+  background-color: var(--color-bg-secondary);
+  transform: scale(1.02);
+}
+
+.upload-zone p {
+  margin: 0.5rem 0;
+}
+
+.upload-zone-hint {
+  font-size: 0.875rem;
+  color: var(--color-text-secondary);
+}

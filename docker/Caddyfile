@@ -1,0 +1,161 @@
+{
+    # Global options
+    # For production, enable auto_https
+    # auto_https on
+    admin off
+    email admin@cognitiolabs.eu
+}
+
+# Production domain
+cdn.xdata.si {
+    # Logging
+    log {
+        output stdout
+        format json
+        level INFO
+    }
+
+    # Security headers
+    header {
+        # Enable HSTS in production
+        Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+
+        X-Content-Type-Options "nosniff"
+        X-Frame-Options "DENY"
+        X-XSS-Protection "1; mode=block"
+        Referrer-Policy "strict-origin-when-cross-origin"
+
+        # Remove server identification
+        -Server
+    }
+
+    # Serve frontend static files
+    handle /assets/* {
+        root * /var/www/html
+        file_server
+
+        # Cache static assets (JS, CSS, images)
+        header Cache-Control "public, max-age=31536000, immutable"
+    }
+
+    # Serve frontend index.html for SPA routes
+    handle {
+        root * /var/www/html
+        try_files {path} /index.html
+        file_server
+    }
+
+    # Proxy API and CDN requests to backend
+    handle /api/* {
+        reverse_proxy backend:3000 {
+            # Health check
+            health_uri /healthz
+            health_interval 10s
+            health_timeout 5s
+
+            # Headers
+            header_up X-Real-IP {remote_host}
+            header_up X-Forwarded-For {remote_host}
+            header_up X-Forwarded-Proto {scheme}
+        }
+    }
+
+    handle /cdn/* {
+        reverse_proxy backend:3000 {
+            # Health check
+            health_uri /healthz
+            health_interval 10s
+            health_timeout 5s
+
+            # Headers
+            header_up X-Real-IP {remote_host}
+            header_up X-Forwarded-For {remote_host}
+            header_up X-Forwarded-Proto {scheme}
+        }
+    }
+
+    handle /healthz {
+        reverse_proxy backend:3000
+    }
+
+    handle /metrics {
+        reverse_proxy backend:3000
+    }
+}
+
+# Development/local access
+:8080 {
+    # Logging
+    log {
+        output stdout
+        format json
+        level INFO
+    }
+
+    # Security headers
+    header {
+        # Enable HSTS (uncomment for production with HTTPS)
+        # Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+
+        X-Content-Type-Options "nosniff"
+        X-Frame-Options "DENY"
+        X-XSS-Protection "1; mode=block"
+        Referrer-Policy "strict-origin-when-cross-origin"
+
+        # Remove server identification
+        -Server
+    }
+
+    # Serve frontend static files
+    handle /assets/* {
+        root * /var/www/html
+        file_server
+
+        # Cache static assets (JS, CSS, images)
+        header Cache-Control "public, max-age=31536000, immutable"
+    }
+
+    # Serve frontend index.html for SPA routes
+    handle {
+        root * /var/www/html
+        try_files {path} /index.html
+        file_server
+    }
+
+    # Proxy API and CDN requests to backend
+    handle /api/* {
+        reverse_proxy backend:3000 {
+            # Health check
+            health_uri /healthz
+            health_interval 10s
+            health_timeout 5s
+
+            # Headers
+            header_up X-Real-IP {remote_host}
+            header_up X-Forwarded-For {remote_host}
+            header_up X-Forwarded-Proto {scheme}
+        }
+    }
+
+    handle /cdn/* {
+        reverse_proxy backend:3000 {
+            # Health check
+            health_uri /healthz
+            health_interval 10s
+            health_timeout 5s
+
+            # Headers
+            header_up X-Real-IP {remote_host}
+            header_up X-Forwarded-For {remote_host}
+            header_up X-Forwarded-Proto {scheme}
+        }
+    }
+
+    handle /healthz {
+        reverse_proxy backend:3000
+    }
+
+    handle /metrics {
+        reverse_proxy backend:3000
+    }
+}
