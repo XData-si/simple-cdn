@@ -38,7 +38,17 @@ jobs:
         working-directory: ./frontend
         run: npm run build
 
+      - name: Check Netlify credentials
+        id: check-secrets
+        run: |
+          if [ -n "${{ secrets.NETLIFY_AUTH_TOKEN }}" ] && [ -n "${{ secrets.NETLIFY_SITE_ID }}" ]; then
+            echo "configured=true" >> $GITHUB_OUTPUT
+          else
+            echo "configured=false" >> $GITHUB_OUTPUT
+          fi
+
       - name: Deploy to Netlify
+        if: steps.check-secrets.outputs.configured == 'true'
         uses: nwtgck/actions-netlify@v3.0
         with:
           publish-dir: './frontend/dist'
@@ -54,8 +64,22 @@ jobs:
         timeout-minutes: 5
 
       - name: Deployment summary
-        if: success()
+        if: steps.check-secrets.outputs.configured == 'true' && success()
         run: |
           echo "✅ Frontend successfully deployed to Netlify"
           echo "Branch: ${{ github.ref_name }}"
           echo "Commit: ${{ github.sha }}"
+
+      - name: Netlify not configured
+        if: steps.check-secrets.outputs.configured == 'false'
+        run: |
+          echo "ℹ️ Netlify deployment skipped - credentials not configured"
+          echo ""
+          echo "To enable Netlify deployment:"
+          echo "1. Create Netlify site at https://app.netlify.com"
+          echo "2. Add GitHub secrets:"
+          echo "   - NETLIFY_AUTH_TOKEN"
+          echo "   - NETLIFY_SITE_ID"
+          echo "3. See NETLIFY.md for detailed instructions"
+          echo ""
+          echo "Frontend build completed successfully ✓"
