@@ -16,6 +16,7 @@
 - [Step 7: Frontend Deployment](#step-7-frontend-deployment)
 - [Step 8: Configure Domain & SSL](#step-8-configure-domain--ssl)
 - [Step 9: Verify Deployment](#step-9-verify-deployment)
+- [GitHub Actions CI/CD](#github-actions-cicd)
 - [Monitoring & Logs](#monitoring--logs)
 - [Updates & Rollbacks](#updates--rollbacks)
 - [Backup Strategy](#backup-strategy)
@@ -631,6 +632,359 @@ https://cdn.xdata.si/cdn/filename.jpg
 - [ ] Can access uploaded files via public URL
 - [ ] Thumbnails generate correctly
 - [ ] All API endpoints responding
+
+---
+
+## GitHub Actions CI/CD
+
+**Automate deployments with GitHub Actions!** Every push to the `main` branch automatically builds and deploys your application to Coolify.
+
+### Benefits
+
+✅ **Automatic Deployment** - Push to `main` → Coolify deploys
+✅ **Docker Image Registry** - Images stored in GitHub Container Registry (ghcr.io)
+✅ **Build Caching** - Faster subsequent builds
+✅ **Version Control** - Every deployment linked to a commit
+✅ **Manual Triggers** - Deploy any branch on-demand
+
+### Architecture
+
+```
+┌─────────────────┐
+│  Push to main   │
+└────────┬────────┘
+         │
+         ↓
+┌─────────────────────────┐
+│   GitHub Actions        │
+│  1. Build Docker Image  │
+│  2. Push to ghcr.io    │
+│  3. Trigger Coolify    │
+└────────┬────────────────┘
+         │
+         ↓
+┌─────────────────────────┐
+│   Coolify Platform      │
+│  1. Pull new image      │
+│  2. Restart container   │
+│  3. Health check        │
+└─────────────────────────┘
+```
+
+### Setup Instructions
+
+#### 1. Get Coolify Webhook URL
+
+In Coolify Dashboard:
+
+1. Go to your **CDN XData** service
+2. Click **Webhooks** tab
+3. Click **+ Add Webhook** or find existing webhook
+4. Copy the webhook URL (looks like):
+   ```
+   https://coolify.yourdomain.com/api/v1/deploy?uuid=abc-123-def-456&token=xyz789
+   ```
+
+#### 2. Get Coolify API Token
+
+In Coolify Dashboard:
+
+1. Go to **Settings** → **API Tokens**
+2. Click **Generate New Token**
+3. Name it: `GitHub Actions Deploy`
+4. Copy the generated token (shows only once!)
+
+#### 3. Add GitHub Secrets
+
+Go to your repository:
+
+```
+https://github.com/XData-si/simple-cdn/settings/secrets/actions
+```
+
+Click **"New repository secret"** and add:
+
+**COOLIFY_WEBHOOK**
+```
+Value: https://coolify.yourdomain.com/api/v1/deploy?uuid=abc-123-def-456&token=xyz789
+```
+
+**COOLIFY_TOKEN**
+```
+Value: <paste-api-token-here>
+```
+
+#### 4. Configure Coolify for Docker Images
+
+In Coolify service configuration:
+
+1. Go to **General** tab
+2. Set **Build Pack**: `Docker Image`
+3. Set **Image**: `ghcr.io/xdata-si/simple-cdn:latest`
+4. Set **Pull Policy**: `Always` (pull image on every deployment)
+5. Click **Save**
+
+**Important:** Change from Dockerfile build to Docker Image deployment!
+
+#### 5. Verify Workflow File
+
+The workflow file `.github/workflows/coolify-deploy.yml` is already configured:
+
+```yaml
+name: Deploy to Coolify
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'backend/**'
+      - 'docker/Dockerfile.backend'
+
+jobs:
+  build-and-deploy:
+    steps:
+      - Build Docker image
+      - Push to ghcr.io
+      - Trigger Coolify webhook
+```
+
+**Triggers:**
+- ✅ Push to `main` branch
+- ✅ Changes in `backend/` directory
+- ✅ Changes in `docker/Dockerfile.backend`
+- ✅ Manual workflow dispatch
+
+### Usage
+
+#### Automatic Deployment
+
+Simply push to main:
+
+```bash
+git add .
+git commit -m "Update backend API"
+git push origin main
+```
+
+**What happens:**
+1. GitHub Actions builds Docker image
+2. Pushes to `ghcr.io/xdata-si/simple-cdn:latest`
+3. Triggers Coolify webhook
+4. Coolify pulls new image and restarts container
+5. Health check verifies deployment
+
+#### Manual Deployment
+
+Via GitHub UI:
+
+1. Go to **Actions** tab
+2. Select **Deploy to Coolify**
+3. Click **Run workflow**
+4. Choose branch (default: `main`)
+5. Click **Run workflow** button
+
+Via `gh` CLI:
+
+```bash
+gh workflow run coolify-deploy.yml
+```
+
+#### Monitor Deployment
+
+**GitHub Actions:**
+```
+https://github.com/XData-si/simple-cdn/actions
+```
+
+Click on running workflow to see:
+- Build logs
+- Push to registry status
+- Webhook trigger result
+
+**Coolify Dashboard:**
+- Service page shows deployment status
+- **Logs** tab shows container restart
+- **Deployments** tab shows deployment history
+
+### Deployment Flow
+
+```
+1. Developer pushes code to main
+   ↓
+2. GitHub Actions triggered
+   ↓
+3. Docker image built (backend)
+   ↓
+4. Image pushed to ghcr.io/xdata-si/simple-cdn:latest
+   ↓
+5. Webhook triggered with Authorization
+   ↓
+6. Coolify receives webhook
+   ↓
+7. Coolify pulls latest image from ghcr.io
+   ↓
+8. Container restarted with new image
+   ↓
+9. Health check passes (/healthz)
+   ↓
+10. Deployment complete ✅
+```
+
+### Image Registry
+
+Images are stored on **GitHub Container Registry** (ghcr.io):
+
+```
+ghcr.io/xdata-si/simple-cdn:latest
+ghcr.io/xdata-si/simple-cdn:main-abc123  # commit SHA
+ghcr.io/xdata-si/simple-cdn:main         # branch tag
+```
+
+**View images:**
+```
+https://github.com/orgs/XData-si/packages
+```
+
+**Pull image manually:**
+```bash
+docker pull ghcr.io/xdata-si/simple-cdn:latest
+```
+
+### Troubleshooting
+
+#### Build Fails
+
+**Error:** `docker build` fails in GitHub Actions
+
+**Solution:**
+- Check Dockerfile syntax: `docker/Dockerfile.backend`
+- Verify all files exist (backend/src/*, backend/package.json)
+- Check GitHub Actions logs for specific error
+
+#### Push to Registry Fails
+
+**Error:** `denied: permission_denied`
+
+**Solution:**
+- Verify workflow has `packages: write` permission
+- Check GitHub token permissions in repository settings
+- Ensure organization allows package publishing
+
+#### Webhook Trigger Fails
+
+**Error:** `curl: (22) The requested URL returned error: 401`
+
+**Solution:**
+- Verify `COOLIFY_TOKEN` is correct
+- Check token hasn't expired in Coolify
+- Regenerate token if needed
+
+**Error:** `curl: (22) The requested URL returned error: 404`
+
+**Solution:**
+- Verify `COOLIFY_WEBHOOK` URL is correct
+- Check service exists in Coolify
+- Webhook may have been deleted - create new one
+
+#### Coolify Doesn't Pull New Image
+
+**Error:** Deployment triggered but container not updated
+
+**Solution:**
+1. Check Coolify service configuration
+2. Verify **Build Pack** is set to `Docker Image`
+3. Verify **Image** matches: `ghcr.io/xdata-si/simple-cdn:latest`
+4. Set **Pull Policy** to `Always`
+5. Check Coolify logs for pull errors
+
+**Check image digest:**
+```bash
+# On server
+docker inspect ghcr.io/xdata-si/simple-cdn:latest | grep -A 1 "Digest"
+
+# Compare with ghcr.io
+# Should match latest pushed image
+```
+
+#### Authentication Required for Image Pull
+
+**Error:** Coolify can't pull private image
+
+**Solution:** Configure registry credentials in Coolify:
+
+1. Go to **Settings** → **Registries**
+2. Add **GitHub Container Registry**:
+   - Registry URL: `ghcr.io`
+   - Username: `your-github-username`
+   - Token: GitHub Personal Access Token with `read:packages`
+
+**Or make image public:**
+1. Go to package settings: https://github.com/orgs/XData-si/packages
+2. Click **Package settings**
+3. Change visibility to **Public**
+
+### Advanced Configuration
+
+#### Multi-Environment Deployments
+
+Deploy to staging and production:
+
+```yaml
+# .github/workflows/coolify-staging.yml
+on:
+  push:
+    branches: [develop]
+env:
+  COOLIFY_WEBHOOK: ${{ secrets.COOLIFY_WEBHOOK_STAGING }}
+
+# .github/workflows/coolify-production.yml
+on:
+  push:
+    branches: [main]
+env:
+  COOLIFY_WEBHOOK: ${{ secrets.COOLIFY_WEBHOOK_PRODUCTION }}
+```
+
+#### Build Multiple Architectures
+
+```yaml
+platforms: linux/amd64,linux/arm64
+```
+
+#### Deployment Notifications
+
+Add Slack/Discord notification after deployment:
+
+```yaml
+- name: Notify Slack
+  if: success()
+  run: |
+    curl -X POST ${{ secrets.SLACK_WEBHOOK }} \
+      -H 'Content-Type: application/json' \
+      -d '{"text":"✅ CDN XData deployed successfully!"}'
+```
+
+### Best Practices
+
+✅ **Always test locally** before pushing:
+```bash
+docker build -f docker/Dockerfile.backend -t test-cdn .
+docker run -p 3000:3000 --env-file .env test-cdn
+```
+
+✅ **Use semantic versioning** for tags:
+```yaml
+type=semver,pattern={{version}}
+type=semver,pattern={{major}}.{{minor}}
+```
+
+✅ **Monitor deployment status** in both GitHub Actions and Coolify
+
+✅ **Keep secrets secure** - never commit tokens to repository
+
+✅ **Enable notifications** for failed deployments
+
+✅ **Backup before major updates** (see [Backup Strategy](#backup-strategy))
 
 ---
 

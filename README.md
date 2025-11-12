@@ -2,6 +2,7 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Tests](https://github.com/XData-si/simple-cdn/workflows/Tests/badge.svg)](https://github.com/XData-si/simple-cdn/actions)
+[![Deploy to Coolify](https://github.com/XData-si/simple-cdn/workflows/Deploy%20to%20Coolify/badge.svg)](https://github.com/XData-si/simple-cdn/actions)
 [![Bun](https://img.shields.io/badge/Bun-1.0-black?logo=bun)](https://bun.sh)
 [![Docker](https://img.shields.io/badge/Docker-ready-2496ED?logo=docker)](https://www.docker.com)
 [![Version](https://img.shields.io/badge/Version-1.1.0-green.svg)](CHANGELOG.md)
@@ -18,6 +19,7 @@ Production-ready image CDN service running at **https://cdn.xdata.si** that serv
 ✅ **SVG Security** - Sanitization and CSP headers to prevent XSS
 ✅ **Performance** - ETag, Cache-Control, range requests, compression
 ✅ **Docker Ready** - Complete Docker setup with Caddy reverse proxy
+✅ **CI/CD** - Automated deployments via GitHub Actions (Coolify, Netlify)
 ✅ **File Operations** - Upload, delete, rename, move, create folders
 ✅ **Drag & Drop** - Intuitive upload experience
 ✅ **URL Copying** - One-click copy of static URLs and `<img>` tags
@@ -31,6 +33,7 @@ Production-ready image CDN service running at **https://cdn.xdata.si** that serv
 - **Reverse Proxy**: External (Caddy, Nginx, Apache - see [PROXY.md](PROXY.md))
 - **Storage**: Local filesystem (S3-compatible backend support planned)
 - **Authentication**: Argon2id password hashing, HTTP-only cookies
+- **CI/CD**: GitHub Actions with automated Docker builds and deployments
 
 ## Quick Start
 
@@ -353,9 +356,14 @@ ports:
 
 For production deployment to **cdn.xdata.si**, see:
 - [DEPLOYMENT.md](DEPLOYMENT.md) - Complete deployment guide (manual Docker setup)
-- [COOLIFY.md](COOLIFY.md) - Coolify deployment guide (PaaS platform)
+- [COOLIFY.md](COOLIFY.md) - Coolify deployment guide (PaaS platform + GitHub Actions CI/CD)
 - [NETLIFY.md](NETLIFY.md) - Netlify deployment guide (frontend only with GitHub Actions)
 - [PROXY.md](PROXY.md) - External proxy configuration (Caddy, Nginx, Apache)
+
+**Automated Deployments (CI/CD):**
+- **Coolify**: Push to `main` → GitHub Actions builds Docker image → Deploys to Coolify
+- **Netlify**: Frontend automatically deployed on every push via GitHub Actions
+- See [COOLIFY.md - GitHub Actions CI/CD](#github-actions-cicd) for setup instructions
 
 **Quick production checklist:**
 1. ✅ Point DNS to server
