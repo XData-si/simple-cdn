@@ -354,6 +354,7 @@ ports:
 For production deployment to **cdn.xdata.si**, see:
 - [DEPLOYMENT.md](DEPLOYMENT.md) - Complete deployment guide (manual Docker setup)
 - [COOLIFY.md](COOLIFY.md) - Coolify deployment guide (PaaS platform)
+- [NETLIFY.md](NETLIFY.md) - Netlify deployment guide (frontend only with GitHub Actions)
 - [PROXY.md](PROXY.md) - External proxy configuration (Caddy, Nginx, Apache)
 
 **Quick production checklist:**
@@ -389,7 +390,7 @@ Contributions welcome! Please:
 For issues and questions:
 - Check [Troubleshooting](#troubleshooting) section
 - Review [API.md](docs/API.md) for API details
-- See [DEPLOYMENT.md](DEPLOYMENT.md) or [COOLIFY.md](COOLIFY.md) for production setup
+- See [DEPLOYMENT.md](DEPLOYMENT.md), [COOLIFY.md](COOLIFY.md), or [NETLIFY.md](NETLIFY.md) for production setup
 - Open an [issue](https://github.com/XData-si/simple-cdn/issues) on GitHub
 - Contact: admin@cognitiolabs.eu
 

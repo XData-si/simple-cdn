@@ -25,7 +25,7 @@ export interface ApiError {
 }
 
 class ApiClient {
-  private baseUrl = '';
+  private baseUrl = import.meta.env.VITE_API_BASE_URL || '';
 
   async login(username: string, password: string): Promise<{ success: boolean; username: string }> {
     const response = await fetch(`${this.baseUrl}/api/auth/login`, {
