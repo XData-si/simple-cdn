@@ -36,11 +36,29 @@ cp .env.example .env
 
 ### 3. Generate Admin Password
 
+**Option A: Using Bun (recommended)**
 ```bash
 cd backend
 bun install
 echo -n "your-secure-password" | bun run hash-password
 ```
+
+**Option B: Using Node.js (if Bun not installed)**
+```bash
+cd backend
+npm install
+node -e "import('@node-rs/argon2').then(({hash})=>hash('your-secure-password',{memoryCost:65536,timeCost:3,parallelism:4}).then(console.log))"
+```
+
+**Option C: Quick Test Credentials**
+For development/testing, use these pre-generated credentials:
+```env
+ADMIN_USERNAME=admin
+ADMIN_PASSWORD_HASH=$argon2id$v=19$m=65536,t=3,p=4$JBt+ogxjtkcvc9i7vWnspg$nmqpzcWmr0XAcJ8XIbbBq+nE53MkeS3p9djSqgJ1pl4
+# Password: admin123
+```
+
+⚠️ **Change in production!** Generate a secure password using Option A or B.
 
 Copy the output hash and paste it into `.env`:
 
@@ -61,11 +79,18 @@ Wait ~30 seconds for services to start.
 
 Open your browser:
 
-**Admin Panel**: http://localhost:8080
+**Backend API**: http://localhost:3000
+**Health Check**: http://localhost:3000/healthz
+
+⚠️ **Note**: Backend runs on port 3000. For full application with frontend:
+- **Development**: Run `cd frontend && npm run dev` (http://localhost:5173)
+- **Production**: Deploy frontend to Netlify or serve via external proxy
+
+See [PROXY.md](PROXY.md) for proxy setup or [NETLIFY.md](NETLIFY.md) for frontend deployment.
 
 Login with:
 - Username: `admin` (or whatever you set in `.env`)
-- Password: `your-secure-password` (from step 3)
+- Password: `your-secure-password` (or `admin123` if using test credentials)
 
 ## What's Running?
 

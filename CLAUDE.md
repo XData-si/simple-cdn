@@ -2,6 +2,30 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Latest Updates (2025-11-13)
+
+**Session Summary:** See `SESSION_SUMMARY.md` for complete details of latest development session.
+
+**Recent Additions:**
+- ✅ **GitHub Actions CI/CD for Coolify** - Automated Docker builds and deployments
+- ✅ **Netlify Deployment** - Frontend deployment with GitHub Actions
+- ✅ **TypeScript Build Fix** - Added Vite environment type definitions
+- ✅ **Development Credentials** - Test credentials setup (admin/admin123)
+- ✅ **Updated Documentation** - QUICKSTART.md with 3 password generation options
+
+**New Files:**
+- `COOLIFY.md` - Coolify deployment guide with GitHub Actions CI/CD section
+- `NETLIFY.md` - Netlify deployment guide (frontend only)
+- `.github/workflows/coolify-deploy.yml` - Coolify deployment workflow
+- `.github/workflows/netlify-deploy.yml` - Netlify deployment workflow
+- `frontend/src/vite-env.d.ts` - Vite TypeScript definitions
+- `SESSION_SUMMARY.md` - Detailed session documentation
+
+**Configuration Status:**
+- ✅ `.env` file created with test credentials (admin/admin123)
+- ⚠️ GitHub secrets for Coolify not yet configured (COOLIFY_WEBHOOK, COOLIFY_TOKEN)
+- ⚠️ GitHub secrets for Netlify optional (NETLIFY_AUTH_TOKEN, NETLIFY_SITE_ID)
+
 ## Project Overview
 
 **CDN XData** - A production-ready image CDN service by **Cognition Labs EU** running in Docker that serves JPG, PNG, and SVG files publicly while restricting upload/edit operations to authenticated users.
@@ -9,7 +33,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 **Production Domain**: https://cdn.xdata.si
 **Company**: https://cognitiolabs.eu
 
-**Current Status**: ✅ Fully implemented, branded, and production-ready. The PRD (docs/prd.md) is written in Slovenian and contains original specifications.
+**Current Status**: ✅ Fully implemented, branded, production-ready with CI/CD pipelines. Ready for production deployment after configuring Coolify secrets.
 
 ## Architecture
 

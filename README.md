@@ -5,7 +5,7 @@
 [![Deploy to Coolify](https://github.com/XData-si/simple-cdn/workflows/Deploy%20to%20Coolify/badge.svg)](https://github.com/XData-si/simple-cdn/actions)
 [![Bun](https://img.shields.io/badge/Bun-1.0-black?logo=bun)](https://bun.sh)
 [![Docker](https://img.shields.io/badge/Docker-ready-2496ED?logo=docker)](https://www.docker.com)
-[![Version](https://img.shields.io/badge/Version-1.1.0-green.svg)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/Version-1.2.0-green.svg)](CHANGELOG.md)
 
 **Professional image CDN service by [Cognition Labs EU](https://cognitiolabs.eu)**
 
